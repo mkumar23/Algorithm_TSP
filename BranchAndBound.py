@@ -5,7 +5,7 @@ Created on Nov 16, 2014
 '''
 from pqdict import PQDict
 # from prim import prim
-from prims_mrinal_old import Prim
+from prim import primWeight
 from itertools import count
 
 def lowerBound(G,tour):
@@ -34,7 +34,7 @@ def lowerBound(G,tour):
 # #     print nodeList
 #     minOutgoingEdge=min([G.get_edge_data(tour[-1],node)['weight'] for node in nodeList])
 #     minIncomingEdge=min([G.get_edge_data(node,tour[0])['weight'] for node in nodeList])
-#     mincurrent=Prim(G.subgraph(nodeList)) + findCost(G, tour) +minIncomingEdge+minOutgoingEdge
+#     mincurrent=primWeight(G.subgraph(nodeList)) + findCost(G, tour) +minIncomingEdge+minOutgoingEdge
 # #     if(mincurrent<minPrev):
 # #         return minPrev
 #     return mincurrent
