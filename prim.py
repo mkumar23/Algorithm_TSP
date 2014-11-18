@@ -1,29 +1,51 @@
 from pqdict import PQDict
 import networkx as nx
 
-def prim(G):
+def primMST(G):
     """ Return MST of the given undirected graph"""
-    #sumWeight = 0
-    heap = PQDict()
-    for u in G.nodes():
-        heap[u] = float("inf")
+    vis = set()
+    tot_weight = 0
+    pq = PQDict()            
+    Gprime = nx.Graph()
+    
+    ''' Add all nodes to PQDict with infinite distance'''
+    for node in G.nodes():
+        pq.additem(node, float("inf"))
+    
+    curr = pq.pop()    #Select initial node
+    vis.add(curr)
+    while len(pq) > 0:
+        for s,nod, wt in G.edges(curr, data=True):
+            if nod not in vis and wt['weight'] < pq[nod]: pq.updateitem(nod, wt['weight']) 
+        
+        if len(pq)>0:            
+            top = pq.top()
+            source,destination, dist = [data for data in sorted(G.edges(top, data=True), key=lambda (source,target,data): data['weight']) if data[1] in vis][0]
+            Gprime.add_edge(source, destination, weight = dist['weight'])
+            vis.add(top)
+            tot_weight += pq[top]
+            curr = pq.pop()
+            
+    return Gprime, tot_weight
 
-    flag = [False] * len(G)
-    pointer = [None] * len(G)
-    heap[1] = 0
-    pointer[0] = -1
-    T = nx.Graph()
-
-    while len(heap) != 0:
-        [u, value] = heap.popitem()
-        flag[u - 1] = True
-        if pointer[u - 1] != -1:
-            T.add_edge(pointer[u - 1], u, weight = value)
-        #sumWeight += value
-        for s,v,w in G.edges(u, data=True):
-            if flag[v - 1] is False:
-                value = min(heap[v], w['weight'])
-                if w['weight'] == value:
-                    pointer[v - 1] = u
-                heap[v] = value
-    return T
+def primWeight(G):
+    """ Return MST of the given undirected graph"""
+    vis = set()
+    tot_weight = 0
+    pq = PQDict()            
+    
+    for node in G.nodes():
+        pq.additem(node, float("inf"))
+    
+    curr = pq.pop()
+    vis.add(curr)
+    while len(pq) > 0:
+        for s,nod, wt in G.edges(curr, data=True):
+            if nod not in vis and wt['weight'] < pq[nod]: pq.updateitem(nod, wt['weight']) 
+        
+        if len(pq)>0:
+            top = pq.top()
+            vis.add(top)
+            tot_weight += pq[top]
+            curr = pq.pop()
+    return tot_weight
