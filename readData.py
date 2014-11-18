@@ -1,6 +1,6 @@
 import networkx as nx
 from math import sqrt, cos, acos
-# from igraph import  *
+
 def findDistance(i,j,point,type):
     if(type.lower()=='euc_2d'):
         return (long)(sqrt((point[i][0]-point[j][0])*(point[i][0]-point[j][0])+(point[i][1]-point[j][1])*(point[i][1]-point[j][1]))+0.5)
@@ -61,8 +61,7 @@ def createGraph(fileName):
                 points[city]=(x,y)
             else:
                 break
-#         for i in xrange(1,dimension+1):
-#             G.add_vertex(name)
+
         for i in xrange(1,dimension+1):
             for j in xrange(1,dimension+1):
                 if i!=j:
@@ -70,4 +69,3 @@ def createGraph(fileName):
             
     return G,optimal
 
-# createGraph('C:\\Users\\Naman\\Dropbox\\gatech\\ALGO\\project\\DATA\\burma14.tsp')
