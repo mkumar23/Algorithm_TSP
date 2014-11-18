@@ -1,6 +1,6 @@
 import networkx as nx
 import readData
-from prim import prim
+from prim import primMST
 import sys
 
 def dfs(G, i):
@@ -10,14 +10,14 @@ def dfs(G, i):
         if visited[t - 1] == False:
             dfs(G, t)
 
-G, optimal = readData.createGraph(sys.argv[1])
-T = prim(G)
+G, optimal = readData.createGraph("Data/kroA100.tsp")
+Gprime, minwt = primMST(G)
 
-visited = [False] * len(T)
+visited = [False] * len(Gprime)
 record = []
-dfs(T, 1)
+dfs(Gprime, 1)
 
-nodes = list(nx.dfs_preorder_nodes(T,1))
+nodes = list(nx.dfs_preorder_nodes(Gprime,1))
 length = 0
 for i in xrange(len(nodes)-1):
     length += G.get_edge_data(nodes[i], nodes[i+1])['weight']

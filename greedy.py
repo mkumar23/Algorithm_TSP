@@ -11,7 +11,7 @@ def greed():
     pq = PQDict()
     tot_length = 0
     seq = []
-    G,optimal = read.createGraph('Data\\kroA100.tsp')
+    G,optimal = read.createGraph('Data\\burma14.tsp')
     start = 1
     curr = start
     vis.add(curr)
@@ -26,7 +26,7 @@ def greed():
     next = [list for list in (sorted(G.edges(curr, data=True), key=lambda (source,target,data): data['weight'])) if list[1] == start][0]
     seq.append(next[1])
     tot_length += next[2]['weight']
-    print seq,tot_length
+    print optimal, tot_length, tot_length/float(int(optimal))
     return seq,tot_length
 
 print greed()[1]
