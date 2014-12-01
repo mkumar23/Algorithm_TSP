@@ -7,7 +7,9 @@ from pqdict import PQDict
 # from prim import prim
 from prim import primWeight
 from itertools import count
-
+import time
+from math import isinf
+INFINITY=10000000
 def lowerBound(G,tour):
     nodeList=[node for node in G.nodes() if not node in tour]
 #     list(set(G.nodes())-set(tour))
@@ -51,20 +53,30 @@ def findCost(G,tour):
 # #             print tour
 #             cost+=G.get_edge_data(tour[i],tour[0])['weight']
     return cost
-def branchAndBound(G):
-    count=0
+def branchAndBound(G,cutoff):
     queue=PQDict()
-    bestSolution= 'inf'
+    bestSolution= INFINITY
+    bestTour=[]
     totalNodes=len(G.nodes())
     startNode=G.nodes()[0]
     nodeList=G.nodes()
     nodeList.remove(startNode)
     queue.additem(tuple([startNode]),lowerBound(G,[startNode]))
+    
+    
+    start_time = time.time()
     while(len(queue)!=0):
 #         print count
 #         count+=1
         coveredNodes,lowerBoundCurrent=queue.popitem()
 #         coveredNodes=list(coveredNodes)
+
+        elapsed_time = time.time() - start_time
+        if elapsed_time>cutoff*60:
+            if bestSolution==INFINITY:
+                return -1,[]
+            return bestTour,bestSolution
+        
         for neighbor in G.neighbors(coveredNodes[-1]):
             if not neighbor in coveredNodes:
                 tempNodes=list(coveredNodes)
@@ -73,14 +85,13 @@ def branchAndBound(G):
                     cost=findCost(G, tempNodes) + G.get_edge_data(neighbor,startNode)['weight']
                     if(cost < bestSolution):
                         bestSolution= cost
-                        print bestSolution
-                        print tempNodes
+                        bestTour=tempNodes
                 else:
                     tempLowerBound=lowerBound(G, tempNodes)
                     if tempLowerBound < bestSolution:
                         queue.additem(tuple(tempNodes),tempLowerBound)
 #                     else:
 #                         print 'prune'
-    return bestSolution
+    return bestTour,bestSolution
     
     

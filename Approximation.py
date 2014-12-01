@@ -1,33 +1,33 @@
-import networkx as nx
-import readData
-import prim
 import sys
 import time
 
-def dfs(G, i):
+import prim
+import readData
+
+
+def dfs(G, i,visited,record):
     visited[i - 1] = True
     record.append(i)
-    for s,t,w in G.edges(i,data=True):
+    for s, t, w in G.edges(i, data=True):
         if visited[t - 1] == False:
-            dfs(G, t)
+            dfs(G, t,visited,record)
 	
-start_time = time.time()
-G, optimal = readData.createGraph(sys.argv[1])
-T, non = prim.primMST(G)
 
-visited = [False] * len(T)
-record = []
+def mst_approx(G):
+    start_time = time.time()
+    T, non = prim.primMST(G)
+    
+    visited = [False] * len(T)
+    record = []
 
-def main():
-	dfs(T, 1)
-	#print record
-	length = 0
-	for i in xrange(len(record)-1):
-	    length += G.get_edge_data(record[i], record[i+1])['weight']
-	length = length + G.get_edge_data(record[0], record[-1])['weight']
+    dfs(T, 1,visited,record)
+	# print record
+    length = 0
+    for i in xrange(len(record) - 1):
+	    length += G.get_edge_data(record[i], record[i + 1])['weight']
+    length = length + G.get_edge_data(record[0], record[-1])['weight']
 
-	total_time = (time.time() - start_time)
-	print total_time, length, optimal, float(length - int(optimal))/float(optimal)
-	return record, length
+    total_time = (time.time() - start_time)
+#     print total_time, length, optimal, float(length - int(optimal)) / float(optimal)
+    return record, length
 
-print main()

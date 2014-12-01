@@ -31,14 +31,15 @@ def SA(nodes, T, T_min, r, G):
 		T = T * r
 	return nodes
 
-def main():
-	G, optimal = readData.createGraph(sys.argv[1])
+def simulated_annealiing(G,seed):
+# 	G, optimal = readData.createGraph(sys.argv[1])
 	nodes = G.nodes()
+	random.seed(seed)
 	random.shuffle(nodes)
 	T =  G.get_edge_data(max(G.edges())[0], max(G.edges())[1])['weight'] * len(G.nodes())
 	r =  0.9999
 	final_nodes = SA(nodes, T, 0.001, r, G)
-	print weight(final_nodes, G), optimal
+# 	print weight(final_nodes, G), optimal
 	return final_nodes, weight(final_nodes, G)
 
-print main()
+# print simulated_annealiing()
