@@ -53,7 +53,7 @@ def findCost(G,tour):
 # #             print tour
 #             cost+=G.get_edge_data(tour[i],tour[0])['weight']
     return cost
-def branchAndBound(G,cutoff):
+def branchAndBound(G,cutoff,ftrace):
     queue=PQDict()
     bestSolution= INFINITY
     bestTour=[]
@@ -72,7 +72,7 @@ def branchAndBound(G,cutoff):
 #         coveredNodes=list(coveredNodes)
 
         elapsed_time = time.time() - start_time
-        if elapsed_time>cutoff*60:
+        if elapsed_time>cutoff:
             if bestSolution==INFINITY:
                 return -1,[]
             return bestTour,bestSolution
@@ -86,6 +86,7 @@ def branchAndBound(G,cutoff):
                     if(cost < bestSolution):
                         bestSolution= cost
                         bestTour=tempNodes
+                        ftrace.write("{0:.2f}".format(elapsed_time*1.0)+','+str(bestSolution)+'\n')
                 else:
                     tempLowerBound=lowerBound(G, tempNodes)
                     if tempLowerBound < bestSolution:
