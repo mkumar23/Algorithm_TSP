@@ -32,7 +32,7 @@ def SA(nodes, T, T_min, r, G,cutoff):
 		T = T * r
 	return nodes
 
-def simulated_annealiing(G,seed,cutoff):
+def simulated_annealiing(G,seed,cutoff,ftrace):
 # 	G, optimal = readData.createGraph(sys.argv[1])
 	nodes = G.nodes()
 	random.seed(seed)
