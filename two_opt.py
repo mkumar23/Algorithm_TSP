@@ -1,12 +1,19 @@
 '''
 Created on Nov 30, 2014
 
-@author: Naman
+@author: 
+
+Hill climbing approach as local search method for tsp.
+
+Neighbour serach : two opt (if cannot find two opt), go further and find 3 opt if possibe
+Random Perturbation: double bridge move
+
 '''
 import random
 import time
 from Approximation import mst_approx
 
+''' find the cost of the whole tour'''
 def findCost(G,tour):
     cost=0
     if(len(tour)==1):
@@ -17,6 +24,7 @@ def findCost(G,tour):
     cost+=G.get_edge_data(tour[i],tour[0])['weight']
     return cost
 
+''' two swap moves'''
 def two_swap(tour,city1,city2):
     newTour=[]
     for i in xrange(city1):
@@ -27,6 +35,7 @@ def two_swap(tour,city1,city2):
         newTour.append(tour[i])
     return newTour
 
+''' one out of possible three swap moves'''
 def three_swap(tour,city1,city2,city3):
     newTour=[]
     for i in xrange(city1):
@@ -40,6 +49,7 @@ def three_swap(tour,city1,city2,city3):
 
     return newTour  
 
+''' double bridge move for random perturbation'''
 def randomPerturbation(tour):
     cities=random.sample(range(0,len(tour)),4)
     cities.sort()
@@ -66,72 +76,73 @@ def randomPerturbation(tour):
         i=(i+1)%length
         
     newtour = tour1+ tour3[::-1]+tour4[::-1]+tour2
-#     print c1,c2,c3,c4
-#     print tour[:c1],
-#     print tour[c3:c4][::-1],
-#     print tour[c1:c2],
-#     print tour[c3:c2][::-1],
-#     print tour[c4:]
-#     newTour=tour[:c1]+tour[c3:c4][::-1]+tour[c1:c2]+tour[c3:c2][::-1]+ tour[c4:]
 
     return newtour
     
     
-    
-def two_opt(G,cutoff,seed,ftrace):
+'''main code for running two opt local search'''
+def two_opt(G,seed,cutoff,ftrace,optimal):
     tour=G.nodes()
     random.seed(seed)
     random.shuffle(tour)
-    tour,_=mst_approx(G)
+#     tour,_=mst_approx(G)
     
     nodeCount=len(tour)
     bestDistanceSoFar=findCost(G, tour)
     bestTour=tour
     count=0
     start_time = time.time()
+    
+    
     while True:
-        elapsed_time = time.time() - start_time
-        if elapsed_time>cutoff:
-            return bestTour,bestDistanceSoFar
+        
+        if bestDistanceSoFar==optimal:
+            break
         
         lastBest=bestDistanceSoFar
-        bestInThisIteration=bestDistanceSoFar
-        bestTourInThisIteraion=tour
+
         for i in xrange(nodeCount):
             for j in xrange(i+1,nodeCount):
-#                 newTour=[]
-#                 c1=i
-#                 c2=(i+1)%nodeCount
-#                 c3=j
-#                 c4=(j+1)%nodeCount
-#                 if G.get_edge_data(tour[c1],tour[c2])['weight'] + G.get_edge_data(tour[c3],tour[c4])['weight'] >G.get_edge_data(tour[c1],tour[c4])['weight'] + G.get_edge_data(tour[c2],tour[c3])['weight']:
-#                       newTour[:c1]=tour[:c1]
-#                       newTour[c1+1]
 
 #              First find
                 newTour=two_swap(tour,i,j)
                 newDistance=findCost(G, newTour)
 #                 print newDistance
                 if newDistance<bestDistanceSoFar:
-                    print newDistance
                     tour=newTour
                     bestDistanceSoFar=newDistance
                     bestTour=newTour
-                    ftrace.write("{0:.2f}".format(elapsed_time*1.0)+','+str(bestDistanceSoFar)+'\n')
+                    ftrace.write("{0:.2f}".format(time.time()-start_time)+','+str(bestDistanceSoFar)+'\n')
+                    elapsed_time = time.time() - start_time
+                    if elapsed_time>cutoff:
+                        return bestTour,bestDistanceSoFar
 
-#              Best FInd
-#                 newTour=two_swap(tour,i,j)
-#                 newDistance=findCost(G, newTour)
-#                 if newDistance<bestInThisIteration:
-#                     bestTourInThisIteraion=newTour
-#                     bestInThisIteration=newDistance
-#                     ftrace.write("{0:.2f}".format(elapsed_time*1.0)+','+str(bestDistanceSoFar)+'\n')
 
-#         if bestInThisIteration < bestDistanceSoFar:
-#             bestDistanceSoFar=bestInThisIteration
-#             bestTour=bestTourInThisIteraion
-#             tour=bestTourInThisIteraion
-#             print bestDistanceSoFar
+        foundGood=False     
+        if bestDistanceSoFar==lastBest:
+            for i in xrange(nodeCount):
+                for j in xrange(i+1,nodeCount):
+                    for k in xrange(j+1,nodeCount):
+                        
+                        elapsed_time = time.time() - start_time
+                        if elapsed_time>cutoff:
+                            return bestTour,bestDistanceSoFar
+                        
+                        newTour=three_swap(tour,i,j,k)
+                        newDistance=findCost(G, newTour)
+                      
+
+                        if newDistance<bestDistanceSoFar:
+                            tour=newTour
+                            bestDistanceSoFar=newDistance
+                            ftrace.write("{0:.2f}".format(time.time()-start_time)+','+str(bestDistanceSoFar)+'\n')
+                            bestTour=newTour
+                            foundGood=True
+                    if foundGood==True:
+                            break
+                if foundGood==True:
+                            break
+                            
 
 #       Random perturbation
         if bestDistanceSoFar==lastBest:
@@ -140,20 +151,5 @@ def two_opt(G,cutoff,seed,ftrace):
             count=0
         if count>3:
             tour=randomPerturbation(bestTour)
-            print findCost(G, tour)
-            print 'random perturb'
-#         for i in xrange(nodeCount):
-#             for j in xrange(i+1,nodeCount):
-#                 for k in xrange(j+1,nodeCount):
-#                     newTour=three_swap(tour,i,j,k)
-#                     newDistance=findCost(G, newTour)
-#                     if newDistance<bestDistanceSoFar:
-#                         print newDistance
-#                         tour=newTour
-#                         bestDistanceSoFar=newDistance
-#                         bestTour=newTour
-#         print 'whole run'
-                
+                            
     return bestTour,bestDistanceSoFar
- 
-# print three_swap([1,2,3,4,5,6,7,8,9,10],3,5,7)   
