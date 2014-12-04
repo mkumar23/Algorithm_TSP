@@ -29,7 +29,7 @@ def minCost(G,path,node):
         loc = 1
     return loc,min_cost
 '''Farthest Insertion method'''
-def greed():
+def greedy_approx():
     """ Return MST of the given undirected graph"""
     vis = set()
     tot_weight = 0
@@ -61,4 +61,4 @@ def greed():
             tot_weight += cost
             
     print tot_weight,optimal,tot_weight/float(optimal)
-    return tot_weight,path
+    return path,tot_weight
