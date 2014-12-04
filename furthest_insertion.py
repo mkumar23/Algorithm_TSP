@@ -60,5 +60,4 @@ def greedy_approx():
             path.insert(loc, top)
             tot_weight += cost
             
-    print tot_weight,optimal,tot_weight/float(optimal)
     return path,tot_weight
