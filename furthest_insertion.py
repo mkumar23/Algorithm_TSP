@@ -29,14 +29,13 @@ def minCost(G,path,node):
         loc = 1
     return loc,min_cost
 '''Farthest Insertion method'''
-def greedy_approx():
+def greedy_approx(G):
     """ Return MST of the given undirected graph"""
     vis = set()
     tot_weight = 0
     pq = PQDict()            
     path = []
     
-    G,optimal = read.createGraph('Data\\burma14.tsp')
     '''Initialize Priority Queue which will help us find Farthest node after distance is calcualted from visited node''' 
     for node in G.nodes():
         pq.additem(node, float("-inf"))
@@ -60,4 +59,4 @@ def greedy_approx():
             path.insert(loc, top)
             tot_weight += cost
             
-    return path,tot_weight
+    return tot_weight,path
